@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { siteConfig } from "@/lib/site";
 import { CatalogSidebar } from "@/components/CatalogSidebar";
 import type { CategoryView } from "@/lib/categories";
@@ -41,12 +42,12 @@ export function Hero({ categories }: { categories: CategoryView[] }) {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a
-                href="#catalog"
+              <Link
+                href="/catalog"
                 className="rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
               >
                 Смотреть каталог
-              </a>
+              </Link>
               <a
                 href={siteConfig.phoneHref}
                 className="rounded-full border border-border px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-accent-soft hover:text-accent-soft"

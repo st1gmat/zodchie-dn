@@ -17,6 +17,61 @@ const categories = [
   { title: "Фурнитура и аксессуары", description: "Шланги, сифоны, крепёж", icon: "fittings" },
 ];
 
+// Demo nomenclature — placeholder catalog content until real products are
+// imported (manually or from 1C). Prices in whole rubles. Keyed by category icon.
+type SeedProduct = { title: string; price: number; inStock?: boolean };
+
+const productsByIcon: Record<string, SeedProduct[]> = {
+  faucets: [
+    { title: "Смеситель для кухни с поворотным изливом", price: 4990 },
+    { title: "Смеситель для раковины однорычажный", price: 3290 },
+    { title: "Смеситель для ванны с душевым набором", price: 6790 },
+    { title: "Термостатический смеситель для душа", price: 11900, inStock: false },
+  ],
+  toilets: [
+    { title: "Унитаз-компакт напольный", price: 7990 },
+    { title: "Унитаз подвесной с сиденьем микролифт", price: 9890 },
+    { title: "Инсталляция для подвесного унитаза", price: 8490 },
+    { title: "Комплект: инсталляция, унитаз и кнопка", price: 18900 },
+  ],
+  baths: [
+    { title: "Ванна акриловая 170×70", price: 14900 },
+    { title: "Ванна стальная 150×70", price: 9990 },
+    { title: "Душевая кабина 90×90 с поддоном", price: 27900 },
+    { title: "Душевой уголок 100×80", price: 16900, inStock: false },
+  ],
+  sinks: [
+    { title: "Раковина накладная керамическая", price: 4290 },
+    { title: "Раковина-тюльпан с пьедесталом", price: 5690 },
+    { title: "Раковина встраиваемая 60 см", price: 4990 },
+    { title: "Мойка кухонная нержавеющая", price: 3990 },
+  ],
+  pipes: [
+    { title: "Труба полипропиленовая 20 мм (1 м)", price: 90 },
+    { title: "Уголок полипропиленовый 20 мм", price: 35 },
+    { title: "Тройник полипропиленовый 20 мм", price: 45 },
+    { title: "Труба металлопластиковая 16 мм (1 м)", price: 120 },
+  ],
+  heating: [
+    { title: "Водонагреватель накопительный 80 л", price: 16900 },
+    { title: "Водонагреватель проточный 5.5 кВт", price: 5990 },
+    { title: "Радиатор биметаллический, 8 секций", price: 6490 },
+    { title: "Полотенцесушитель водяной", price: 4290 },
+  ],
+  furniture: [
+    { title: "Тумба с раковиной 60 см", price: 12900 },
+    { title: "Зеркало-шкаф с подсветкой", price: 7990 },
+    { title: "Пенал для ванной комнаты", price: 8990 },
+    { title: "Зеркало настенное 70×50", price: 3490 },
+  ],
+  fittings: [
+    { title: "Сифон для раковины с переливом", price: 590 },
+    { title: "Гибкая подводка для воды 1/2 (0.5 м)", price: 190 },
+    { title: "Сифон для ванны автомат", price: 1290 },
+    { title: "Набор аксессуаров для ванной", price: 2490 },
+  ],
+};
+
 async function main() {
   for (const [index, category] of categories.entries()) {
     const data = {
@@ -25,11 +80,27 @@ async function main() {
       icon: category.icon,
       order: index,
     };
-    await prisma.category.upsert({
+    const saved = await prisma.category.upsert({
       where: { slug: slugify(category.title) },
       update: data,
       create: { slug: slugify(category.title), ...data },
     });
+
+    const products = productsByIcon[category.icon] ?? [];
+    for (const [productIndex, product] of products.entries()) {
+      const productData = {
+        title: product.title,
+        price: product.price,
+        inStock: product.inStock ?? true,
+        order: productIndex,
+        categoryId: saved.id,
+      };
+      await prisma.product.upsert({
+        where: { slug: slugify(product.title) },
+        update: productData,
+        create: { slug: slugify(product.title), ...productData },
+      });
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { CategoryView } from "@/lib/categories";
 
 export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
@@ -40,12 +41,12 @@ export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
               <ul className="py-2 text-sm text-muted">
                 {categories.map((category) => (
                   <li key={category.id}>
-                    <a
-                      href="#catalog"
+                    <Link
+                      href={`/catalog/${category.slug}`}
                       className="block px-5 py-3 transition-colors hover:bg-surface-soft hover:text-accent-soft"
                     >
                       {category.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

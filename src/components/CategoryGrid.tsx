@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "@/lib/site";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import type { CategoryView } from "@/lib/categories";
@@ -11,8 +12,8 @@ export function CategoryGrid({ categories }: { categories: CategoryView[] }) {
             Каталог
           </h2>
           <p className="mt-4 text-muted">
-            Полный онлайн-каталог в разработке. Пока уточнить наличие,
-            цены и сроки поставки по любой категории можно по телефону —{" "}
+            Выберите категорию, чтобы посмотреть товары. Уточнить наличие,
+            цены и сроки поставки можно по телефону —{" "}
             <a
               href={siteConfig.phoneHref}
               className="font-medium text-accent-soft hover:text-accent"
@@ -25,8 +26,9 @@ export function CategoryGrid({ categories }: { categories: CategoryView[] }) {
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {categories.map((category) => (
-            <div
+            <Link
               key={category.id}
+              href={`/catalog/${category.slug}`}
               className="group rounded-2xl border border-border bg-background p-6 transition-colors hover:border-accent-strong"
             >
               <CategoryIcon
@@ -37,7 +39,7 @@ export function CategoryGrid({ categories }: { categories: CategoryView[] }) {
                 {category.title}
               </h3>
               <p className="mt-1 text-sm text-muted">{category.description}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

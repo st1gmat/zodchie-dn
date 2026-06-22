@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { siteConfig } from "@/lib/site";
 
-const navLinks = [{ href: "#catalog", label: "Каталог" }];
+const navLinks = [{ href: "/catalog", label: "Каталог" }];
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -26,29 +27,29 @@ export function Header() {
       </div>
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a
-          href="#top"
+        <Link
+          href="/"
           className="flex items-center gap-2 text-xl font-semibold tracking-[0.15em] text-foreground"
         >
           {siteConfig.name.toUpperCase()}
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 text-sm text-muted md:flex">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="transition-colors hover:text-foreground"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <a
-            href="#catalog"
+          <Link
+            href="/catalog"
             title="Избранное появится позже"
             className="text-muted transition-colors hover:text-accent-soft"
           >
@@ -64,9 +65,9 @@ export function Header() {
             >
               <path d="M11 19s-7.5-4.6-9.3-9.6C.6 6 2 3 5.2 3c2 0 3.4 1.1 4.3 2.3a1 1 0 0 0 1 0C11.4 4.1 12.8 3 14.8 3 18 3 19.4 6 18.3 9.4 16.5 14.4 11 19 11 19Z" />
             </svg>
-          </a>
-          <a
-            href="#catalog"
+          </Link>
+          <Link
+            href="/catalog"
             title="Корзина появится позже"
             className="text-muted transition-colors hover:text-accent-soft"
           >
@@ -84,7 +85,7 @@ export function Header() {
               <circle cx="8" cy="20" r="1.3" />
               <circle cx="16" cy="20" r="1.3" />
             </svg>
-          </a>
+          </Link>
           <a
             href={siteConfig.phoneHref}
             className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
@@ -123,13 +124,13 @@ export function Header() {
           <ul className="flex flex-col gap-4 text-sm text-muted">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <a
+                <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
                   className="hover:text-foreground"
                 >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
             <li>
