@@ -63,6 +63,8 @@ export async function getCategoryDetail(
   };
 }
 
+export type ProductAttributeView = { name: string; value: string };
+
 export type ProductDetail = {
   id: string;
   slug: string;
@@ -71,6 +73,7 @@ export type ProductDetail = {
   price: number;
   inStock: boolean;
   images: string[];
+  attributes: ProductAttributeView[];
   category: { slug: string; title: string };
 };
 
@@ -92,6 +95,7 @@ export async function getProductDetail(
       price: true,
       inStock: true,
       images: { orderBy: { order: "asc" }, select: { url: true } },
+      attributes: { orderBy: { order: "asc" }, select: { name: true, value: true } },
       category: { select: { slug: true, title: true } },
     },
   });
@@ -108,6 +112,7 @@ export async function getProductDetail(
     price: product.price,
     inStock: product.inStock,
     images: images.length > 0 ? images : [PRODUCT_PLACEHOLDER],
+    attributes: product.attributes,
     category: product.category,
   };
 }

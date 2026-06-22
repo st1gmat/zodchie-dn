@@ -1,10 +1,10 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProductDetail } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ProductGallery } from "@/components/ProductGallery";
 
 export async function generateMetadata({
   params,
@@ -38,16 +38,7 @@ export default async function ProductPage({
       />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-surface">
-          <Image
-            src={product.images[0]}
-            alt={product.title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-10"
-            priority
-          />
-        </div>
+        <ProductGallery images={product.images} title={product.title} />
 
         <div className="flex flex-col">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
@@ -68,6 +59,27 @@ export default async function ProductPage({
 
           {product.description && (
             <p className="mt-6 leading-relaxed text-muted">{product.description}</p>
+          )}
+
+          {product.attributes.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-foreground">
+                Характеристики
+              </h2>
+              <dl className="mt-4 divide-y divide-border border-t border-border text-sm">
+                {product.attributes.map((attribute) => (
+                  <div
+                    key={attribute.name}
+                    className="flex justify-between gap-4 py-3"
+                  >
+                    <dt className="text-muted">{attribute.name}</dt>
+                    <dd className="text-right font-medium text-foreground">
+                      {attribute.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           )}
 
           <div className="mt-10 flex flex-wrap gap-4">

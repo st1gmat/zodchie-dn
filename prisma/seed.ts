@@ -72,6 +72,60 @@ const productsByIcon: Record<string, SeedProduct[]> = {
   ],
 };
 
+// Demo specifications applied to every product in a category. Placeholder
+// values until real nomenclature is loaded. Keyed by category icon.
+type SeedAttr = { name: string; value: string };
+
+const specsByIcon: Record<string, SeedAttr[]> = {
+  faucets: [
+    { name: "Материал корпуса", value: "Латунь" },
+    { name: "Тип монтажа", value: "На бортик" },
+    { name: "Покрытие", value: "Хром" },
+    { name: "Гарантия", value: "12 месяцев" },
+  ],
+  toilets: [
+    { name: "Материал", value: "Санфаянс" },
+    { name: "Система слива", value: "Двойная кнопка" },
+    { name: "Сиденье", value: "Микролифт" },
+    { name: "Гарантия", value: "24 месяца" },
+  ],
+  baths: [
+    { name: "Материал", value: "Акрил" },
+    { name: "Цвет", value: "Белый" },
+    { name: "Слив-перелив", value: "В комплекте" },
+    { name: "Гарантия", value: "24 месяца" },
+  ],
+  sinks: [
+    { name: "Материал", value: "Керамика" },
+    { name: "Тип установки", value: "Накладная" },
+    { name: "Цвет", value: "Белый" },
+    { name: "Отверстие под смеситель", value: "Есть" },
+  ],
+  pipes: [
+    { name: "Материал", value: "Полипропилен" },
+    { name: "Диаметр", value: "20 мм" },
+    { name: "Рабочая температура", value: "до 70 °C" },
+    { name: "Назначение", value: "Холодная и горячая вода" },
+  ],
+  heating: [
+    { name: "Тип", value: "Накопительный" },
+    { name: "Управление", value: "Механическое" },
+    { name: "Установка", value: "Настенная" },
+    { name: "Гарантия", value: "12 месяцев" },
+  ],
+  furniture: [
+    { name: "Материал", value: "ЛДСП, влагостойкая" },
+    { name: "Цвет", value: "Белый" },
+    { name: "Монтаж", value: "Подвесной" },
+    { name: "Гарантия", value: "12 месяцев" },
+  ],
+  fittings: [
+    { name: "Материал", value: "Пластик" },
+    { name: "Совместимость", value: "Универсальная" },
+    { name: "Комплектация", value: "Крепёж в комплекте" },
+  ],
+};
+
 async function main() {
   for (const [index, category] of categories.entries()) {
     const data = {
@@ -87,6 +141,7 @@ async function main() {
     });
 
     const products = productsByIcon[category.icon] ?? [];
+    const specs = specsByIcon[category.icon] ?? [];
     for (const [productIndex, product] of products.entries()) {
       const productData = {
         title: product.title,
@@ -95,11 +150,26 @@ async function main() {
         order: productIndex,
         categoryId: saved.id,
       };
-      await prisma.product.upsert({
+      const savedProduct = await prisma.product.upsert({
         where: { slug: slugify(product.title) },
         update: productData,
         create: { slug: slugify(product.title), ...productData },
       });
+
+      // Reset attributes so re-seeding stays idempotent (no business key to upsert on).
+      await prisma.productAttribute.deleteMany({
+        where: { productId: savedProduct.id },
+      });
+      if (specs.length > 0) {
+        await prisma.productAttribute.createMany({
+          data: specs.map((spec, specIndex) => ({
+            name: spec.name,
+            value: spec.value,
+            order: specIndex,
+            productId: savedProduct.id,
+          })),
+        });
+      }
     }
   }
 }
