@@ -1,10 +1,11 @@
-import { categories, siteConfig } from "@/lib/site";
+import { siteConfig } from "@/lib/site";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import type { CategoryView } from "@/lib/categories";
 
-export function CategoryGrid() {
+export function CategoryGrid({ categories }: { categories: CategoryView[] }) {
   return (
     <section id="catalog" className="border-b border-border bg-surface/40">
-      <div className="mx-auto max-w-6xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-20">
         <div className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground">
             Каталог
@@ -29,7 +30,7 @@ export function CategoryGrid() {
               className="group rounded-2xl border border-border bg-background p-6 transition-colors hover:border-accent-strong"
             >
               <CategoryIcon
-                id={category.id}
+                id={category.icon ?? ""}
                 className="h-8 w-8 text-accent-soft transition-colors group-hover:text-accent"
               />
               <h3 className="mt-5 text-base font-medium text-foreground">

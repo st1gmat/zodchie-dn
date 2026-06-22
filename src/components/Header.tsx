@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { siteConfig, categories } from "@/lib/site";
+import { siteConfig } from "@/lib/site";
 
 const navLinks = [{ href: "#catalog", label: "Каталог" }];
 
@@ -11,7 +11,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
       <div className="hidden border-b border-border/60 bg-surface/60 sm:block">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-xs text-muted">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-xs text-muted">
           <span>{siteConfig.address}</span>
           <div className="flex items-center gap-6">
             <span>{siteConfig.workingHours}</span>
@@ -25,7 +25,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <a
           href="#top"
           className="flex items-center gap-2 text-xl font-semibold tracking-[0.15em] text-foreground"
@@ -116,20 +116,6 @@ export function Header() {
             )}
           </svg>
         </button>
-      </div>
-
-      <div className="hidden border-t border-border bg-surface/60 md:block">
-        <nav className="mx-auto flex max-w-6xl gap-6 overflow-x-auto px-6 py-2.5 text-sm text-muted">
-          {categories.map((category) => (
-            <a
-              key={category.id}
-              href="#catalog"
-              className="shrink-0 whitespace-nowrap transition-colors hover:text-accent-soft"
-            >
-              {category.title}
-            </a>
-          ))}
-        </nav>
       </div>
 
       {open && (
