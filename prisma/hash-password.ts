@@ -9,4 +9,10 @@ if (!password) {
   process.exit(1);
 }
 
-console.log(bcrypt.hashSync(password, 10));
+const hash = bcrypt.hashSync(password, 10);
+
+// Next's env loader (@next/env) expands `$...` in .env values, which mangles a
+// bcrypt hash. Escape every `$` as `\$` so the value is read literally.
+console.log("\nPaste this line into .env:\n");
+console.log(`ADMIN_PASSWORD_HASH="${hash.replace(/\$/g, "\\$")}"`);
+console.log("");
