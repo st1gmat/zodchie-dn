@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ProductForm } from "@/app/admin/ProductForm";
+import { ProductImagesManager } from "@/app/admin/ProductImagesManager";
 import { updateProduct } from "@/app/admin/actions";
 
 export default async function EditProduct({
@@ -19,6 +20,10 @@ export default async function EditProduct({
         inStock: true,
         order: true,
         categoryId: true,
+        images: {
+          orderBy: { order: "asc" },
+          select: { id: true, url: true },
+        },
       },
     }),
     prisma.category.findMany({
@@ -40,6 +45,10 @@ export default async function EditProduct({
           categories={categories}
           product={product}
         />
+      </div>
+
+      <div className="mt-10">
+        <ProductImagesManager productId={product.id} images={product.images} />
       </div>
     </div>
   );

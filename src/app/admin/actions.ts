@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/slug";
+import { saveUpload, deleteUpload } from "@/lib/uploads";
 import {
   verifyPassword,
   createSession,
@@ -152,4 +153,74 @@ export async function deleteProduct(formData: FormData) {
   await prisma.product.delete({ where: { id } });
   refreshPublic();
   redirect("/admin/products");
+}
+
+export async function addProductImages(formData: FormData) {
+  await requireAdmin();
+  const productId = String(formData.get("productId") ?? "");
+  if (!productId) return;
+
+  const files = formData
+    .getAll("files")
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  if (files.length === 0) return;
+
+  const last = await prisma.productImage.findFirst({
+    where: { productId },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  let order = (last?.order ?? -1) + 1;
+
+  for (const file of files) {
+    const url = await saveUpload(file);
+    await prisma.productImage.create({ data: { url, order, productId } });
+    order += 1;
+  }
+
+  refreshPublic();
+  revalidatePath(`/admin/products/${productId}`);
+}
+
+export async function deleteProductImage(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const image = await prisma.productImage.findUnique({
+    where: { id },
+    select: { url: true, productId: true },
+  });
+  if (!image) return;
+
+  await prisma.productImage.delete({ where: { id } });
+  await deleteUpload(image.url);
+
+  refreshPublic();
+  revalidatePath(`/admin/products/${image.productId}`);
+}
+
+// Make an image the primary (first) one by renumbering order within the product.
+export async function makeProductImagePrimary(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const image = await prisma.productImage.findUnique({
+    where: { id },
+    select: { productId: true },
+  });
+  if (!image) return;
+
+  const images = await prisma.productImage.findMany({
+    where: { productId: image.productId },
+    orderBy: { order: "asc" },
+    select: { id: true },
+  });
+  const ordered = [id, ...images.map((i) => i.id).filter((other) => other !== id)];
+
+  await prisma.$transaction(
+    ordered.map((imageId, index) =>
+      prisma.productImage.update({ where: { id: imageId }, data: { order: index } }),
+    ),
+  );
+
+  refreshPublic();
+  revalidatePath(`/admin/products/${image.productId}`);
 }
