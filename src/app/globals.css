@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --surface: #f7f7f6;
-  --surface-soft: #eef0f2;
-  --foreground: #181a1f;
-  --muted: #6b7078;
-  --border: #e2e4e8;
-  --accent: #b5793a;
-  --accent-soft: #9c6730;
-  --accent-strong: #7a4e22;
+  /* Soft blue / sky-blue pastel palette — easy on the eyes (no stark white). */
+  --background: #f5f9fd;
+  --surface: #eaf2fa;
+  --surface-soft: #dfeaf5;
+  --foreground: #1e2a38;
+  --muted: #5d7387;
+  --border: #d3e1ee;
+  --accent: #5e9ed1;
+  --accent-soft: #4585bd;
+  --accent-strong: #346a9c;
 }
 
 @theme inline {
