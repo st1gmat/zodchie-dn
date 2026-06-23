@@ -126,6 +126,19 @@ const specsByIcon: Record<string, SeedAttr[]> = {
   ],
 };
 
+// Subcategories per top-level category (keyed by icon). Child slugs are
+// prefixed with the parent slug to stay globally unique.
+const subsByIcon: Record<string, string[]> = {
+  faucets: ["Для кухни", "Для ванной", "Для раковины", "Для душа"],
+  toilets: ["Напольные", "Подвесные", "Инсталляции", "Безободковые"],
+  baths: ["Акриловые ванны", "Стальные ванны", "Душевые кабины", "Душевые уголки"],
+  sinks: ["Накладные", "Встраиваемые", "Тюльпаны", "Кухонные мойки"],
+  pipes: ["Полипропилен", "Металлопластик", "Фитинги", "Краны и вентили"],
+  heating: ["Накопительные", "Проточные", "Радиаторы", "Полотенцесушители"],
+  furniture: ["Тумбы", "Зеркала", "Пеналы", "Шкафы"],
+  fittings: ["Сифоны", "Подводка", "Аксессуары", "Крепёж"],
+};
+
 async function main() {
   for (const [index, category] of categories.entries()) {
     const data = {
@@ -139,6 +152,17 @@ async function main() {
       update: data,
       create: { slug: slugify(category.title), ...data },
     });
+
+    const subs = subsByIcon[category.icon] ?? [];
+    for (const [subIndex, subTitle] of subs.entries()) {
+      const subSlug = `${saved.slug}-${slugify(subTitle)}`;
+      const subData = { title: subTitle, order: subIndex, parentId: saved.id };
+      await prisma.category.upsert({
+        where: { slug: subSlug },
+        update: subData,
+        create: { slug: subSlug, ...subData },
+      });
+    }
 
     const products = productsByIcon[category.icon] ?? [];
     const specs = specsByIcon[category.icon] ?? [];

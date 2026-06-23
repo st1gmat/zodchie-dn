@@ -7,16 +7,25 @@ export default async function EditCategory({
   params,
 }: PageProps<"/admin/categories/[id]">) {
   const { id } = await params;
-  const category = await prisma.category.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      icon: true,
-      order: true,
-    },
-  });
+  const [category, parents] = await Promise.all([
+    prisma.category.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        icon: true,
+        order: true,
+        parentId: true,
+      },
+    }),
+    // Only top-level categories can be parents, and a category can't parent itself.
+    prisma.category.findMany({
+      where: { parentId: null, id: { not: id } },
+      orderBy: { order: "asc" },
+      select: { id: true, title: true },
+    }),
+  ]);
 
   if (!category) notFound();
 
@@ -26,7 +35,7 @@ export default async function EditCategory({
         Категория: {category.title}
       </h1>
       <div className="mt-6">
-        <CategoryForm action={updateCategory} category={category} />
+        <CategoryForm action={updateCategory} category={category} parents={parents} />
       </div>
     </div>
   );

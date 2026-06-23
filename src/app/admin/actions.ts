@@ -36,6 +36,7 @@ const categorySchema = z.object({
   title: z.string().trim().min(1, "Укажите название"),
   description: z.string().trim().optional(),
   icon: z.string().trim().optional(),
+  parentId: z.string().trim().optional(),
   order: z.coerce.number().int().default(0),
 });
 
@@ -44,6 +45,7 @@ function readCategory(formData: FormData) {
     title: formData.get("title"),
     description: formData.get("description") || undefined,
     icon: formData.get("icon") || undefined,
+    parentId: formData.get("parentId") || undefined,
     order: formData.get("order") || 0,
   });
 }
@@ -57,6 +59,7 @@ export async function createCategory(formData: FormData) {
       title: data.title,
       description: data.description ?? null,
       icon: data.icon ?? null,
+      parentId: data.parentId ?? null,
       order: data.order,
     },
   });
@@ -69,12 +72,15 @@ export async function updateCategory(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const data = readCategory(formData);
   // Slug is left unchanged on edit so existing URLs keep working.
+  // Guard against a category becoming its own parent.
+  const parentId = data.parentId && data.parentId !== id ? data.parentId : null;
   await prisma.category.update({
     where: { id },
     data: {
       title: data.title,
       description: data.description ?? null,
       icon: data.icon ?? null,
+      parentId,
       order: data.order,
     },
   });

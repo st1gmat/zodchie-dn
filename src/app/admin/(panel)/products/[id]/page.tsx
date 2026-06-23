@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ProductForm } from "@/app/admin/ProductForm";
 import { ProductImagesManager } from "@/app/admin/ProductImagesManager";
+import { getCategoryOptions } from "@/lib/categories";
 import { updateProduct } from "@/app/admin/actions";
 
 export default async function EditProduct({
@@ -26,10 +27,7 @@ export default async function EditProduct({
         },
       },
     }),
-    prisma.category.findMany({
-      orderBy: { order: "asc" },
-      select: { id: true, title: true },
-    }),
+    getCategoryOptions(),
   ]);
 
   if (!product) notFound();

@@ -6,6 +6,7 @@ import { createCategory, deleteCategory } from "@/app/admin/actions";
 
 export default async function CategoriesAdmin() {
   const categories = await prisma.category.findMany({
+    where: { parentId: null },
     orderBy: { order: "asc" },
     select: {
       id: true,
@@ -13,8 +14,39 @@ export default async function CategoriesAdmin() {
       slug: true,
       order: true,
       _count: { select: { products: true } },
+      children: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          order: true,
+          _count: { select: { products: true } },
+        },
+      },
     },
   });
+
+  const parentOptions = categories.map((c) => ({ id: c.id, title: c.title }));
+
+  const rows = categories.flatMap((category) => [
+    {
+      id: category.id,
+      title: category.title,
+      slug: category.slug,
+      order: category.order,
+      products: category._count.products,
+      depth: 0,
+    },
+    ...category.children.map((child) => ({
+      id: child.id,
+      title: child.title,
+      slug: child.slug,
+      order: child.order,
+      products: child._count.products,
+      depth: 1,
+    })),
+  ]);
 
   return (
     <div className="flex flex-col gap-10">
@@ -35,26 +67,29 @@ export default async function CategoriesAdmin() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {categories.map((category) => (
-                <tr key={category.id}>
-                  <td className="px-4 py-3 text-foreground">{category.title}</td>
-                  <td className="px-4 py-3 text-muted">{category.slug}</td>
-                  <td className="px-4 py-3 text-muted">
-                    {category._count.products}
+              {rows.map((row) => (
+                <tr key={row.id}>
+                  <td className="px-4 py-3 text-foreground">
+                    <span style={row.depth ? { paddingLeft: "1.5rem" } : undefined}>
+                      {row.depth ? "└ " : ""}
+                      {row.title}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-muted">{category.order}</td>
+                  <td className="px-4 py-3 text-muted">{row.slug}</td>
+                  <td className="px-4 py-3 text-muted">{row.products}</td>
+                  <td className="px-4 py-3 text-muted">{row.order}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-3">
                       <Link
-                        href={`/admin/categories/${category.id}`}
+                        href={`/admin/categories/${row.id}`}
                         className="text-accent-soft hover:text-accent"
                       >
                         Изменить
                       </Link>
                       <form action={deleteCategory}>
-                        <input type="hidden" name="id" value={category.id} />
+                        <input type="hidden" name="id" value={row.id} />
                         <ConfirmSubmit
-                          message={`Удалить категорию «${category.title}»? Вместе с ней удалятся все её товары.`}
+                          message={`Удалить категорию «${row.title}»? Её товары будут удалены, а подкатегории станут категориями верхнего уровня.`}
                           className="text-muted hover:text-red-600"
                         >
                           Удалить
@@ -74,7 +109,7 @@ export default async function CategoriesAdmin() {
           Добавить категорию
         </h2>
         <div className="mt-5">
-          <CategoryForm action={createCategory} />
+          <CategoryForm action={createCategory} parents={parentOptions} />
         </div>
       </div>
     </div>

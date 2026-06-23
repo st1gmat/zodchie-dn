@@ -10,6 +10,9 @@ export type ProductCardView = {
   price: number;
   inStock: boolean;
   imageUrl: string;
+  // The product's own category slug, so links resolve even when a parent
+  // category page aggregates products that live in its subcategories.
+  categorySlug: string;
 };
 
 export type CategoryDetail = {
@@ -17,10 +20,15 @@ export type CategoryDetail = {
   slug: string;
   title: string;
   description: string | null;
+  parent: { slug: string; title: string } | null;
+  children: { id: string; slug: string; title: string }[];
   products: ProductCardView[];
 };
 
-/** A category with its products (ordered), for the category listing page. */
+/**
+ * A category for the listing page. Products include the category's own plus
+ * those of its subcategories, so a parent page aggregates everything beneath it.
+ */
 export async function getCategoryDetail(
   slug: string,
 ): Promise<CategoryDetail | null> {
@@ -31,34 +39,46 @@ export async function getCategoryDetail(
       slug: true,
       title: true,
       description: true,
-      products: {
+      parent: { select: { slug: true, title: true } },
+      children: {
         orderBy: { order: "asc" },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          price: true,
-          inStock: true,
-          images: { orderBy: { order: "asc" }, take: 1, select: { url: true } },
-        },
+        select: { id: true, slug: true, title: true },
       },
     },
   });
 
   if (!category) return null;
 
+  const categoryIds = [category.id, ...category.children.map((child) => child.id)];
+  const products = await prisma.product.findMany({
+    where: { categoryId: { in: categoryIds } },
+    orderBy: [{ category: { order: "asc" } }, { order: "asc" }],
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      price: true,
+      inStock: true,
+      images: { orderBy: { order: "asc" }, take: 1, select: { url: true } },
+      category: { select: { slug: true } },
+    },
+  });
+
   return {
     id: category.id,
     slug: category.slug,
     title: category.title,
     description: category.description,
-    products: category.products.map((product) => ({
+    parent: category.parent,
+    children: category.children,
+    products: products.map((product) => ({
       id: product.id,
       slug: product.slug,
       title: product.title,
       price: product.price,
       inStock: product.inStock,
       imageUrl: product.images[0]?.url ?? PRODUCT_PLACEHOLDER,
+      categorySlug: product.category.slug,
     })),
   };
 }

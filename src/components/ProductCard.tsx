@@ -3,16 +3,10 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format";
 import type { ProductCardView } from "@/lib/catalog";
 
-export function ProductCard({
-  categorySlug,
-  product,
-}: {
-  categorySlug: string;
-  product: ProductCardView;
-}) {
+export function ProductCard({ product }: { product: ProductCardView }) {
   return (
     <Link
-      href={`/catalog/${categorySlug}/${product.slug}`}
+      href={`/catalog/${product.categorySlug}/${product.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-colors hover:border-accent-strong"
     >
       <div className="relative aspect-square bg-surface">

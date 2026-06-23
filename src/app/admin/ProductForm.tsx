@@ -10,7 +10,7 @@ export type ProductFormValues = {
   categoryId: string;
 };
 
-export type CategoryOption = { id: string; title: string };
+import type { CategoryOption } from "@/lib/categories";
 
 const inputClass =
   "rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-accent-soft";
@@ -51,7 +51,7 @@ export function ProductForm({
           </option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
-              {category.title}
+              {category.depth > 0 ? `— ${category.title}` : category.title}
             </option>
           ))}
         </select>

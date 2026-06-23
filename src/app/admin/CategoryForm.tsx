@@ -17,7 +17,10 @@ export type CategoryFormValues = {
   description: string | null;
   icon: string | null;
   order: number;
+  parentId: string | null;
 };
+
+export type ParentOption = { id: string; title: string };
 
 const inputClass =
   "rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-accent-soft";
@@ -25,9 +28,11 @@ const inputClass =
 export function CategoryForm({
   action,
   category,
+  parents,
 }: {
   action: (formData: FormData) => void;
   category?: CategoryFormValues;
+  parents: ParentOption[];
 }) {
   return (
     <form action={action} className="flex max-w-xl flex-col gap-5">
@@ -50,6 +55,22 @@ export function CategoryForm({
           defaultValue={category?.description ?? ""}
           className={inputClass}
         />
+      </label>
+
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-muted">Родительская категория</span>
+        <select
+          name="parentId"
+          defaultValue={category?.parentId ?? ""}
+          className={inputClass}
+        >
+          <option value="">— верхний уровень —</option>
+          {parents.map((parent) => (
+            <option key={parent.id} value={parent.id}>
+              {parent.title}
+            </option>
+          ))}
+        </select>
       </label>
 
       <div className="grid gap-5 sm:grid-cols-2">
