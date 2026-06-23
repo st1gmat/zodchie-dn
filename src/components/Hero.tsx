@@ -12,7 +12,7 @@ const highlights = [
 
 export function Hero({ categories }: { categories: CategoryView[] }) {
   return (
-    <section id="top" className="relative overflow-hidden border-b border-border">
+    <section id="top" className="relative z-20 border-b border-border">
       <Image
         src="/images/hero-bathroom.png"
         alt=""
