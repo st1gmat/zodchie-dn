@@ -3,7 +3,7 @@ import type { CategoryView } from "@/lib/categories";
 
 export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
   return (
-    <aside className="relative z-30 hidden lg:block">
+    <aside className="relative z-30 order-2 md:order-1">
       <div className="rounded-2xl border border-border bg-background">
         <div className="border-b border-border px-5 py-4 text-sm font-semibold uppercase tracking-[0.1em] text-foreground">
           Каталог
