@@ -139,6 +139,9 @@ const subsByIcon: Record<string, string[]> = {
   fittings: ["Сифоны", "Подводка", "Аксессуары", "Крепёж"],
 };
 
+// Two demo photos seeded onto every product (served from public/images).
+const demoImages = ["/images/demo-bathroom.avif", "/images/product-placeholder.png"];
+
 async function main() {
   for (const [index, category] of categories.entries()) {
     const data = {
@@ -190,6 +193,21 @@ async function main() {
             name: spec.name,
             value: spec.value,
             order: specIndex,
+            productId: savedProduct.id,
+          })),
+        });
+      }
+
+      // Give each product two demo photos, but only if it has none — so
+      // re-seeding never wipes images uploaded through the admin.
+      const imageCount = await prisma.productImage.count({
+        where: { productId: savedProduct.id },
+      });
+      if (imageCount === 0) {
+        await prisma.productImage.createMany({
+          data: demoImages.map((url, index) => ({
+            url,
+            order: index,
             productId: savedProduct.id,
           })),
         });
