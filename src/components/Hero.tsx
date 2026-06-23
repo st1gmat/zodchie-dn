@@ -25,15 +25,15 @@ export function Hero({ categories }: { categories: CategoryView[] }) {
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(to right, var(--background) 0%, var(--background) 58%, transparent 92%)",
+            "linear-gradient(to right, var(--background) 0%, var(--background) 68%, transparent 96%)",
         }}
       />
 
       <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-12 lg:py-16">
-        <div className="grid items-start gap-8 md:grid-cols-[190px_minmax(0,1fr)]">
+        <div className="grid items-start gap-8 md:grid-cols-[160px_minmax(0,1fr)]">
           <CatalogSidebar categories={categories} />
 
-          <div className="order-1 max-w-2xl md:order-2">
+          <div className="order-1 max-w-3xl md:order-2">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-accent-soft">
               {siteConfig.legalName} · {siteConfig.city}
             </p>
