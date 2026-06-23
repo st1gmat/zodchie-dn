@@ -9,11 +9,17 @@ export type ProductCardView = {
   title: string;
   price: number;
   inStock: boolean;
-  imageUrl: string;
+  // Ordered image URLs (at least one — a placeholder when the product has no
+  // photos). The card lets users flip through them on hover.
+  images: string[];
   // The product's own category slug, so links resolve even when a parent
   // category page aggregates products that live in its subcategories.
   categorySlug: string;
 };
+
+function toCardImages(images: { url: string }[]): string[] {
+  return images.length > 0 ? images.map((image) => image.url) : [PRODUCT_PLACEHOLDER];
+}
 
 /** A random selection of products for the homepage showcase. */
 export async function getShowcaseProducts(
@@ -26,7 +32,7 @@ export async function getShowcaseProducts(
       title: true,
       price: true,
       inStock: true,
-      images: { orderBy: { order: "asc" }, take: 1, select: { url: true } },
+      images: { orderBy: { order: "asc" }, take: 8, select: { url: true } },
       category: { select: { slug: true } },
     },
   });
@@ -43,7 +49,7 @@ export async function getShowcaseProducts(
     title: product.title,
     price: product.price,
     inStock: product.inStock,
-    imageUrl: product.images[0]?.url ?? PRODUCT_PLACEHOLDER,
+    images: toCardImages(product.images),
     categorySlug: product.category.slug,
   }));
 }
@@ -92,7 +98,7 @@ export async function getCategoryDetail(
       title: true,
       price: true,
       inStock: true,
-      images: { orderBy: { order: "asc" }, take: 1, select: { url: true } },
+      images: { orderBy: { order: "asc" }, take: 8, select: { url: true } },
       category: { select: { slug: true } },
     },
   });
@@ -110,7 +116,7 @@ export async function getCategoryDetail(
       title: product.title,
       price: product.price,
       inStock: product.inStock,
-      imageUrl: product.images[0]?.url ?? PRODUCT_PLACEHOLDER,
+      images: toCardImages(product.images),
       categorySlug: product.category.slug,
     })),
   };
