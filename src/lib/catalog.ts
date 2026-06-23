@@ -15,6 +15,39 @@ export type ProductCardView = {
   categorySlug: string;
 };
 
+/** A random selection of products for the homepage showcase. */
+export async function getShowcaseProducts(
+  limit = 24,
+): Promise<ProductCardView[]> {
+  const products = await prisma.product.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      price: true,
+      inStock: true,
+      images: { orderBy: { order: "asc" }, take: 1, select: { url: true } },
+      category: { select: { slug: true } },
+    },
+  });
+
+  // Fisher–Yates shuffle, then take the first `limit`.
+  for (let i = products.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [products[i], products[j]] = [products[j], products[i]];
+  }
+
+  return products.slice(0, limit).map((product) => ({
+    id: product.id,
+    slug: product.slug,
+    title: product.title,
+    price: product.price,
+    inStock: product.inStock,
+    imageUrl: product.images[0]?.url ?? PRODUCT_PLACEHOLDER,
+    categorySlug: product.category.slug,
+  }));
+}
+
 export type CategoryDetail = {
   id: string;
   slug: string;
