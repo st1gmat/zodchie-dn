@@ -11,6 +11,8 @@
   --accent: #5e9ed1;
   --accent-soft: #4585bd;
   --accent-strong: #346a9c;
+  /* Near-white card surface — barely tinted, gentler than pure white. */
+  --card: #fbfdff;
 }
 
 @theme inline {
@@ -23,6 +25,7 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-strong: var(--accent-strong);
+  --color-card: var(--card);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
