@@ -30,7 +30,7 @@ export function Hero({ categories }: { categories: CategoryView[] }) {
       />
 
       <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-12 lg:py-16">
-        <div className="grid items-start gap-8 md:grid-cols-[160px_minmax(0,1fr)]">
+        <div className="grid items-start gap-8 md:grid-cols-[320px_minmax(0,1fr)]">
           <CatalogSidebar categories={categories} />
 
           <div className="order-1 max-w-3xl md:order-2">
