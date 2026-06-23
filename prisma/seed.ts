@@ -157,25 +157,33 @@ async function main() {
     });
 
     const subs = subsByIcon[category.icon] ?? [];
+    const savedSubs = [];
     for (const [subIndex, subTitle] of subs.entries()) {
       const subSlug = `${saved.slug}-${slugify(subTitle)}`;
       const subData = { title: subTitle, order: subIndex, parentId: saved.id };
-      await prisma.category.upsert({
+      const savedSub = await prisma.category.upsert({
         where: { slug: subSlug },
         update: subData,
         create: { slug: subSlug, ...subData },
       });
+      savedSubs.push(savedSub);
     }
 
     const products = productsByIcon[category.icon] ?? [];
     const specs = specsByIcon[category.icon] ?? [];
     for (const [productIndex, product] of products.entries()) {
+      // Spread products across the category's subcategories (round-robin),
+      // falling back to the parent category if it has no subcategories.
+      const targetCategoryId =
+        savedSubs.length > 0
+          ? savedSubs[productIndex % savedSubs.length].id
+          : saved.id;
       const productData = {
         title: product.title,
         price: product.price,
         inStock: product.inStock ?? true,
         order: productIndex,
-        categoryId: saved.id,
+        categoryId: targetCategoryId,
       };
       const savedProduct = await prisma.product.upsert({
         where: { slug: slugify(product.title) },
