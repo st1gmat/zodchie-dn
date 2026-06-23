@@ -5,7 +5,7 @@ export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
   return (
     <aside className="relative z-30 order-2 md:order-1 xl:ml-[calc(616px_-_50vw)]">
       <div className="rounded-2xl border border-border bg-background">
-        <div className="border-b border-border px-5 py-4 text-sm font-semibold uppercase tracking-[0.1em] text-foreground">
+        <div className="border-b border-border px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-foreground">
           Каталог
         </div>
         <nav>
@@ -14,7 +14,7 @@ export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
               <li key={category.id} className="group/cat relative">
                 <Link
                   href={`/catalog/${category.slug}`}
-                  className="flex items-center justify-between gap-3 px-5 py-2.5 text-muted transition-colors group-hover/cat:bg-surface-soft group-hover/cat:text-accent-soft"
+                  className="flex items-center justify-between gap-2 px-4 py-2.5 text-muted transition-colors group-hover/cat:bg-surface-soft group-hover/cat:text-accent-soft"
                 >
                   {category.title}
                   {category.children.length > 0 && (
