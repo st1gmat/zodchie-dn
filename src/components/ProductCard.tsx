@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: ProductCardView }) {
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-colors hover:border-accent-strong"
     >
       <div
-        className="relative aspect-square bg-surface"
+        className="relative aspect-square bg-white"
         onMouseLeave={() => setActive(0)}
       >
         {images.map((src, index) => (
