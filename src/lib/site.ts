@@ -11,9 +11,8 @@ export const siteConfig = {
   email: "info@zodchie-dn.ru",
   inn: "9302008620",
   ogrn: "1229300150716",
-  // TODO: заменить на реальные ссылки соцсетей
   social: {
-    telegram: "https://t.me/",
-    instagram: "https://instagram.com/",
+    telegram: "https://t.me/zodchiedn",
+    instagram: "https://instagram.com/shop_zodchie_donetsk",
   },
 };
