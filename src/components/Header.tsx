@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
+import { SearchBar } from "@/components/SearchBar";
 
 const navLinks = [{ href: "/catalog", label: "Каталог" }];
 
@@ -31,16 +32,20 @@ export function Header() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-semibold tracking-[0.15em] text-foreground"
+          className="flex shrink-0 items-center gap-2 text-xl font-semibold tracking-[0.15em] text-foreground"
         >
           {siteConfig.name.toUpperCase()}
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm text-muted md:flex">
+        <div className="hidden w-full max-w-sm md:block lg:max-w-md">
+          <SearchBar />
+        </div>
+
+        <nav className="ml-auto hidden items-center gap-8 text-sm text-muted md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -102,7 +107,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="inline-flex items-center justify-center rounded-md border border-border p-2 text-foreground md:hidden"
+          className="ml-auto inline-flex items-center justify-center rounded-md border border-border p-2 text-foreground md:hidden"
           aria-label="Открыть меню"
           aria-expanded={open}
         >
@@ -126,6 +131,9 @@ export function Header() {
 
       {open && (
         <nav className="border-t border-border bg-background px-6 py-4 md:hidden">
+          <div className="mb-4">
+            <SearchBar />
+          </div>
           <ul className="flex flex-col gap-4 text-sm text-muted">
             {navLinks.map((link) => (
               <li key={link.href}>
