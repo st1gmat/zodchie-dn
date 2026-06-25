@@ -65,9 +65,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href={siteConfig.phoneHref} className="transition-colors hover:text-accent-soft">
+                <Link href="/contacts" className="transition-colors hover:text-accent-soft">
                   Связаться
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

@@ -10,6 +10,7 @@ import { TelegramIcon, InstagramIcon } from "@/components/icons";
 const navLinks = [
   { href: "/", label: "Главная" },
   { href: "/catalog", label: "Каталог" },
+  { href: "/contacts", label: "Связаться" },
 ];
 
 export function Header() {
@@ -82,44 +83,6 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <Link
-            href="/catalog"
-            title="Избранное появится позже"
-            className="text-muted transition-colors hover:text-accent-soft"
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M11 19s-7.5-4.6-9.3-9.6C.6 6 2 3 5.2 3c2 0 3.4 1.1 4.3 2.3a1 1 0 0 0 1 0C11.4 4.1 12.8 3 14.8 3 18 3 19.4 6 18.3 9.4 16.5 14.4 11 19 11 19Z" />
-            </svg>
-          </Link>
-          <Link
-            href="/catalog"
-            title="Корзина появится позже"
-            className="text-muted transition-colors hover:text-accent-soft"
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M2 4h2l1.6 11.2A2 2 0 0 0 7.6 17h9.3a2 2 0 0 0 2-1.6L20 7H5" />
-              <circle cx="8" cy="20" r="1.3" />
-              <circle cx="16" cy="20" r="1.3" />
-            </svg>
-          </Link>
           <a
             href={siteConfig.phoneHref}
             className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
