@@ -22,8 +22,19 @@ model Category {
   parent      Category?  @relation("CategoryToParent", fields: [parentId], references: [id], onDelete: SetNull)
   children    Category[] @relation("CategoryToParent")
   products    Product[]
+  attributeTemplate CategoryAttribute[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Template of characteristic names a category's products are expected to fill in
+// (so the admin doesn't re-type "Артикул", "Серия", "Цвет"… for each product).
+model CategoryAttribute {
+  id         String   @id @default(cuid())
+  name       String
+  order      Int      @default(0)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -33,6 +44,9 @@ model Product {
   description String?
   price       Int
   inStock     Boolean        @default(true)
+  code        String?
+  brand       String?
+  article     String?
   order       Int            @default(0)
   categoryId  String
   category    Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)

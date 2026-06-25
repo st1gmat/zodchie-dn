@@ -26,6 +26,12 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
+  const meta = [
+    { label: "Код товара", value: product.code },
+    { label: "Бренд", value: product.brand },
+    { label: "Артикул", value: product.article },
+  ].filter((item) => item.value);
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
       <Breadcrumbs
@@ -37,6 +43,7 @@ export default async function ProductPage({
         ]}
       />
 
+      {/* Top panel: gallery + key facts only */}
       <div className="mt-8 grid gap-10 lg:grid-cols-2">
         <ProductGallery images={product.images} title={product.title} />
 
@@ -44,6 +51,17 @@ export default async function ProductPage({
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {product.title}
           </h1>
+
+          {meta.length > 0 && (
+            <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
+              {meta.map((item) => (
+                <div key={item.label} className="flex gap-2">
+                  <dt className="text-muted">{item.label}:</dt>
+                  <dd className="font-medium text-foreground">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
 
           <p className="mt-6 text-3xl font-semibold text-foreground">
             {formatPrice(product.price)}
@@ -56,31 +74,6 @@ export default async function ProductPage({
               <span className="text-muted">Под заказ</span>
             )}
           </p>
-
-          {product.description && (
-            <p className="mt-6 leading-relaxed text-muted">{product.description}</p>
-          )}
-
-          {product.attributes.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-foreground">
-                Характеристики
-              </h2>
-              <dl className="mt-4 divide-y divide-border border-t border-border text-sm">
-                {product.attributes.map((attribute) => (
-                  <div
-                    key={attribute.name}
-                    className="flex justify-between gap-4 py-3"
-                  >
-                    <dt className="text-muted">{attribute.name}</dt>
-                    <dd className="text-right font-medium text-foreground">
-                      {attribute.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          )}
 
           <div className="mt-10 flex flex-wrap gap-4">
             <a
@@ -97,6 +90,40 @@ export default async function ProductPage({
           </p>
         </div>
       </div>
+
+      {/* Below the panel: description + technical characteristics */}
+      {(product.description || product.attributes.length > 0) && (
+        <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
+          {product.description && (
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Описание
+              </h2>
+              <p className="mt-4 leading-relaxed text-muted">
+                {product.description}
+              </p>
+            </section>
+          )}
+
+          {product.attributes.length > 0 && (
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Характеристики
+              </h2>
+              <dl className="mt-4 divide-y divide-border border-t border-border text-sm">
+                {product.attributes.map((attribute) => (
+                  <div key={attribute.name} className="flex justify-between gap-4 py-3">
+                    <dt className="text-muted">{attribute.name}</dt>
+                    <dd className="text-right font-medium text-foreground">
+                      {attribute.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
+        </div>
+      )}
     </div>
   );
 }

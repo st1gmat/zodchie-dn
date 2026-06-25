@@ -8,6 +8,9 @@ export type ProductFormValues = {
   inStock: boolean;
   order: number;
   categoryId: string;
+  code: string | null;
+  brand: string | null;
+  article: string | null;
 };
 
 import type { CategoryOption } from "@/lib/categories";
@@ -66,6 +69,21 @@ export function ProductForm({
           className={inputClass}
         />
       </label>
+
+      <div className="grid gap-5 sm:grid-cols-3">
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-muted">Код товара</span>
+          <input name="code" defaultValue={product?.code ?? ""} className={inputClass} />
+        </label>
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-muted">Бренд</span>
+          <input name="brand" defaultValue={product?.brand ?? ""} className={inputClass} />
+        </label>
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-muted">Артикул</span>
+          <input name="article" defaultValue={product?.article ?? ""} className={inputClass} />
+        </label>
+      </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="flex flex-col gap-2 text-sm">

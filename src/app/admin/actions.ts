@@ -101,6 +101,9 @@ const productSchema = z.object({
   categoryId: z.string().min(1, "Выберите категорию"),
   price: z.coerce.number().int().min(0),
   description: z.string().trim().optional(),
+  code: z.string().trim().optional(),
+  brand: z.string().trim().optional(),
+  article: z.string().trim().optional(),
   inStock: z.boolean(),
   order: z.coerce.number().int().default(0),
 });
@@ -111,6 +114,9 @@ function readProduct(formData: FormData) {
     categoryId: formData.get("categoryId"),
     price: formData.get("price") || 0,
     description: formData.get("description") || undefined,
+    code: formData.get("code") || undefined,
+    brand: formData.get("brand") || undefined,
+    article: formData.get("article") || undefined,
     inStock: formData.get("inStock") === "on",
     order: formData.get("order") || 0,
   });
@@ -126,6 +132,9 @@ export async function createProduct(formData: FormData) {
       price: data.price,
       inStock: data.inStock,
       description: data.description ?? null,
+      code: data.code ?? null,
+      brand: data.brand ?? null,
+      article: data.article ?? null,
       order: data.order,
       categoryId: data.categoryId,
     },
@@ -145,6 +154,9 @@ export async function updateProduct(formData: FormData) {
       price: data.price,
       inStock: data.inStock,
       description: data.description ?? null,
+      code: data.code ?? null,
+      brand: data.brand ?? null,
+      article: data.article ?? null,
       order: data.order,
       categoryId: data.categoryId,
     },
@@ -202,6 +214,47 @@ export async function deleteProductImage(formData: FormData) {
 
   refreshPublic();
   revalidatePath(`/admin/products/${image.productId}`);
+}
+
+// Replace a product's whole characteristics list in one save (called directly
+// from the client editor with an array, not FormData).
+export async function saveProductAttributes(
+  productId: string,
+  attributes: { name: string; value: string }[],
+) {
+  await requireAdmin();
+  const rows = attributes
+    .map((a) => ({ name: a.name.trim(), value: a.value.trim() }))
+    .filter((a) => a.name.length > 0)
+    .map((a, index) => ({ ...a, order: index, productId }));
+
+  await prisma.$transaction([
+    prisma.productAttribute.deleteMany({ where: { productId } }),
+    ...(rows.length > 0
+      ? [prisma.productAttribute.createMany({ data: rows })]
+      : []),
+  ]);
+
+  refreshPublic();
+  revalidatePath(`/admin/products/${productId}`);
+}
+
+// Replace a category's characteristic template (list of attribute names).
+export async function saveCategoryTemplate(categoryId: string, names: string[]) {
+  await requireAdmin();
+  const rows = names
+    .map((name) => name.trim())
+    .filter((name) => name.length > 0)
+    .map((name, index) => ({ name, order: index, categoryId }));
+
+  await prisma.$transaction([
+    prisma.categoryAttribute.deleteMany({ where: { categoryId } }),
+    ...(rows.length > 0
+      ? [prisma.categoryAttribute.createMany({ data: rows })]
+      : []),
+  ]);
+
+  revalidatePath(`/admin/categories/${categoryId}`);
 }
 
 // Make an image the primary (first) one by renumbering order within the product.

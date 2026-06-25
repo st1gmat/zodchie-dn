@@ -142,7 +142,12 @@ const subsByIcon: Record<string, string[]> = {
 // Two demo photos seeded onto every product (served from public/images).
 const demoImages = ["/images/demo-bathroom.avif", "/images/product-placeholder.png"];
 
+// Demo brands rotated across products (placeholder nomenclature).
+const brands = ["AquaTon", "SanLux", "VodaPro", "Сантехникс"];
+
 async function main() {
+  let productCounter = 0;
+
   for (const [index, category] of categories.entries()) {
     const data = {
       title: category.title,
@@ -155,6 +160,15 @@ async function main() {
       update: data,
       create: { slug: slugify(category.title), ...data },
     });
+
+    // Seed the category's characteristic template from the spec names.
+    const templateNames = (specsByIcon[category.icon] ?? []).map((s) => s.name);
+    await prisma.categoryAttribute.deleteMany({ where: { categoryId: saved.id } });
+    if (templateNames.length > 0) {
+      await prisma.categoryAttribute.createMany({
+        data: templateNames.map((name, i) => ({ name, order: i, categoryId: saved.id })),
+      });
+    }
 
     const subs = subsByIcon[category.icon] ?? [];
     const savedSubs = [];
@@ -178,10 +192,14 @@ async function main() {
         savedSubs.length > 0
           ? savedSubs[productIndex % savedSubs.length].id
           : saved.id;
+      productCounter += 1;
       const productData = {
         title: product.title,
         price: product.price,
         inStock: product.inStock ?? true,
+        code: `ZD-${1000 + productCounter}`,
+        brand: brands[productCounter % brands.length],
+        article: `${category.icon.toUpperCase().slice(0, 3)}-${100 + productCounter}`,
         order: productIndex,
         categoryId: targetCategoryId,
       };

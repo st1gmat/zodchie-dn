@@ -131,6 +131,9 @@ export type ProductDetail = {
   description: string | null;
   price: number;
   inStock: boolean;
+  code: string | null;
+  brand: string | null;
+  article: string | null;
   images: string[];
   attributes: ProductAttributeView[];
   category: { slug: string; title: string };
@@ -153,6 +156,9 @@ export async function getProductDetail(
       description: true,
       price: true,
       inStock: true,
+      code: true,
+      brand: true,
+      article: true,
       images: { orderBy: { order: "asc" }, select: { url: true } },
       attributes: { orderBy: { order: "asc" }, select: { name: true, value: true } },
       category: { select: { slug: true, title: true } },
@@ -170,6 +176,9 @@ export async function getProductDetail(
     description: product.description,
     price: product.price,
     inStock: product.inStock,
+    code: product.code,
+    brand: product.brand,
+    article: product.article,
     images: images.length > 0 ? images : [PRODUCT_PLACEHOLDER],
     attributes: product.attributes,
     category: product.category,
