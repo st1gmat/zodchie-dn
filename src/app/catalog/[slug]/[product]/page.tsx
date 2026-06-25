@@ -43,7 +43,7 @@ export default async function ProductPage({
         ]}
       />
 
-      {/* Top panel: gallery + key facts; CTA pinned to the bottom */}
+      {/* Top panel: gallery + key facts */}
       <div className="mt-8 grid gap-10 lg:grid-cols-2">
         <ProductGallery images={product.images} title={product.title} />
 
@@ -51,17 +51,6 @@ export default async function ProductPage({
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             {product.title}
           </h1>
-
-          {meta.length > 0 && (
-            <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
-              {meta.map((item) => (
-                <div key={item.label} className="flex gap-2">
-                  <dt className="text-muted">{item.label}:</dt>
-                  <dd className="font-medium text-foreground">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
 
           <p className="mt-6 text-3xl font-semibold text-foreground">
             {formatPrice(product.price)}
@@ -75,22 +64,34 @@ export default async function ProductPage({
             )}
           </p>
 
+          {meta.length > 0 && (
+            <dl className="mt-6 flex flex-col gap-1.5 text-sm">
+              {meta.map((item) => (
+                <div key={item.label} className="flex gap-2">
+                  <dt className="text-muted">{item.label}:</dt>
+                  <dd className="font-medium text-foreground">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
           {product.description && (
             <p className="mt-6 leading-relaxed text-muted">{product.description}</p>
           )}
 
-          <div className="mt-auto pt-10">
+          <div className="mt-10 flex flex-wrap gap-4">
             <a
               href={siteConfig.phoneHref}
-              className="inline-flex rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
+              className="rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
             >
               Заказать по телефону
             </a>
-            <p className="mt-4 text-sm text-muted">
-              Цена и наличие уточняются — позвоните {siteConfig.phone}, поможем
-              с выбором и расскажем о сроках поставки.
-            </p>
           </div>
+
+          <p className="mt-6 text-sm text-muted">
+            Цена и наличие уточняются — позвоните {siteConfig.phone}, поможем
+            с выбором и расскажем о сроках поставки.
+          </p>
         </div>
       </div>
 
