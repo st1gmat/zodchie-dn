@@ -145,6 +145,16 @@ const demoImages = ["/images/demo-bathroom.avif", "/images/product-placeholder.p
 // Demo brands rotated across products (placeholder nomenclature).
 const brands = ["AquaTon", "SanLux", "VodaPro", "Сантехникс"];
 
+// Extra specs appended to every category (names don't collide with specsByIcon),
+// so products have enough characteristics to spill into a second column.
+const commonSpecs = [
+  { name: "Страна производства", value: "Россия" },
+  { name: "Вес, кг", value: "3.5" },
+  { name: "Габариты, мм", value: "490×370×360" },
+  { name: "Срок службы", value: "10 лет" },
+  { name: "Цвет", value: "Белый" },
+];
+
 async function main() {
   let productCounter = 0;
 
@@ -161,8 +171,13 @@ async function main() {
       create: { slug: slugify(category.title), ...data },
     });
 
+    // Merge the category-specific specs with the common ones, de-duped by name.
+    const categorySpecs = [...(specsByIcon[category.icon] ?? []), ...commonSpecs].filter(
+      (spec, i, arr) => arr.findIndex((s) => s.name === spec.name) === i,
+    );
+
     // Seed the category's characteristic template from the spec names.
-    const templateNames = (specsByIcon[category.icon] ?? []).map((s) => s.name);
+    const templateNames = categorySpecs.map((s) => s.name);
     await prisma.categoryAttribute.deleteMany({ where: { categoryId: saved.id } });
     if (templateNames.length > 0) {
       await prisma.categoryAttribute.createMany({
@@ -184,7 +199,7 @@ async function main() {
     }
 
     const products = productsByIcon[category.icon] ?? [];
-    const specs = specsByIcon[category.icon] ?? [];
+    const specs = categorySpecs;
     for (const [productIndex, product] of products.entries()) {
       // Spread products across the category's subcategories (round-robin),
       // falling back to the parent category if it has no subcategories.
@@ -197,6 +212,7 @@ async function main() {
         title: product.title,
         price: product.price,
         inStock: product.inStock ?? true,
+        description: `${product.title} — практичное и надёжное решение для дома. Продуманный дизайн, простой монтаж и долгий срок службы. Подходит для квартиры и частного дома.`,
         code: `ZD-${1000 + productCounter}`,
         brand: brands[productCounter % brands.length],
         article: `${category.icon.toUpperCase().slice(0, 3)}-${100 + productCounter}`,

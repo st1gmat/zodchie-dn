@@ -43,7 +43,7 @@ export default async function ProductPage({
         ]}
       />
 
-      {/* Top panel: gallery + key facts only */}
+      {/* Top panel: gallery + key facts; CTA pinned to the bottom */}
       <div className="mt-8 grid gap-10 lg:grid-cols-2">
         <ProductGallery images={product.images} title={product.title} />
 
@@ -75,54 +75,49 @@ export default async function ProductPage({
             )}
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          {product.description && (
+            <p className="mt-6 leading-relaxed text-muted">{product.description}</p>
+          )}
+
+          <div className="mt-auto pt-10">
             <a
               href={siteConfig.phoneHref}
-              className="rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
+              className="inline-flex rounded-full bg-accent px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
             >
               Заказать по телефону
             </a>
+            <p className="mt-4 text-sm text-muted">
+              Цена и наличие уточняются — позвоните {siteConfig.phone}, поможем
+              с выбором и расскажем о сроках поставки.
+            </p>
           </div>
-
-          <p className="mt-6 text-sm text-muted">
-            Цена и наличие уточняются — позвоните {siteConfig.phone}, поможем
-            с выбором и расскажем о сроках поставки.
-          </p>
         </div>
       </div>
 
-      {/* Below the panel: description + technical characteristics */}
-      {(product.description || product.attributes.length > 0) && (
-        <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-          {product.description && (
-            <section>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                Описание
-              </h2>
-              <p className="mt-4 leading-relaxed text-muted">
-                {product.description}
-              </p>
-            </section>
-          )}
-
-          {product.attributes.length > 0 && (
-            <section>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                Характеристики
-              </h2>
-              <dl className="mt-4 divide-y divide-border border-t border-border text-sm">
-                {product.attributes.map((attribute) => (
-                  <div key={attribute.name} className="flex justify-between gap-4 py-3">
-                    <dt className="text-muted">{attribute.name}</dt>
-                    <dd className="text-right font-medium text-foreground">
-                      {attribute.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          )}
-        </div>
+      {/* Below the panel: technical characteristics (two columns when long) */}
+      {product.attributes.length > 0 && (
+        <section className="mt-14">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            Характеристики
+          </h2>
+          <dl
+            className={`mt-4 grid border-t border-border text-sm sm:gap-x-12 ${
+              product.attributes.length > 6 ? "sm:grid-cols-2" : "grid-cols-1"
+            }`}
+          >
+            {product.attributes.map((attribute) => (
+              <div
+                key={attribute.name}
+                className="flex justify-between gap-4 border-b border-border py-3"
+              >
+                <dt className="text-muted">{attribute.name}</dt>
+                <dd className="text-right font-medium text-foreground">
+                  {attribute.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       )}
     </div>
   );
