@@ -24,7 +24,7 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
       <div className="hidden border-b border-border/60 bg-surface/60 sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-xs text-muted">
-          <span>{siteConfig.address}</span>
+          <span>{siteConfig.addresses.join(" · ")}</span>
           <div className="flex items-center gap-5">
             <span>{siteConfig.workingHours}</span>
             <a

@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 };
 
 const rows = [
-  { label: "Адрес", value: siteConfig.address },
   { label: "Телефон", value: siteConfig.phone, href: siteConfig.phoneHref },
   { label: "E-mail", value: siteConfig.email, href: `mailto:${siteConfig.email}` },
   { label: "Часы работы", value: siteConfig.workingHours },
@@ -31,6 +30,14 @@ export default function ContactsPage() {
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <div>
           <dl className="divide-y divide-border border-y border-border">
+            {siteConfig.addresses.map((address, index) => (
+              <div key={address} className="flex flex-wrap justify-between gap-2 py-4">
+                <dt className="text-sm text-muted">
+                  {siteConfig.addresses.length > 1 ? `Адрес ${index + 1}` : "Адрес"}
+                </dt>
+                <dd className="text-right font-medium text-foreground">{address}</dd>
+              </div>
+            ))}
             {rows.map((row) => (
               <div key={row.label} className="flex flex-wrap justify-between gap-2 py-4">
                 <dt className="text-sm text-muted">{row.label}</dt>
@@ -90,7 +97,13 @@ export default function ContactsPage() {
             <path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" />
             <circle cx="12" cy="10" r="2.6" />
           </svg>
-          <p className="mt-4 font-medium text-foreground">{siteConfig.address}</p>
+          <div className="mt-4 space-y-1">
+            {siteConfig.addresses.map((address) => (
+              <p key={address} className="font-medium text-foreground">
+                {address}
+              </p>
+            ))}
+          </div>
           <p className="mt-1 text-sm text-muted">{siteConfig.city}</p>
         </div>
       </div>

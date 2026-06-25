@@ -78,7 +78,9 @@ export function Footer() {
               Контакты
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-muted">
-              <li>{siteConfig.address}</li>
+              {siteConfig.addresses.map((address) => (
+                <li key={address}>{address}</li>
+              ))}
               <li>
                 <a
                   href={siteConfig.phoneHref}
