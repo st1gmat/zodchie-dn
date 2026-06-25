@@ -1,2 +1,0 @@
-- [Zodchie business info](project_business_info.md) — real legal name/address/INN/OGRN for the plumbing-store client (father's company)
-- [Zodchie site plan](project_zodchie_site_plan.md) — visual direction (light, santehcentr.com-style structure) and stepwise build approach for the landing page

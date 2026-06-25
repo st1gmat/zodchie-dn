@@ -46,3 +46,9 @@ next-env.d.ts
 
 # uploaded catalog images (local disk storage)
 /public/uploads
+
+# dev-only notes / agent instructions — kept on the `dev` branch, excluded from
+# the clean production `main` tree.
+/CLAUDE.md
+/AGENTS.md
+/memory/
