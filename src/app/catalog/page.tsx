@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Каталог сантехники и инженерного оборудования: смесители, унитазы, ванны, трубы, водонагреватели и другое.",
 };
 
+// Render on each request (reads the DB) — avoids needing a database at build time.
+export const dynamic = "force-dynamic";
+
 export default async function CatalogPage() {
   const categories = await getCategories();
 

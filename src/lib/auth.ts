@@ -30,7 +30,11 @@ export async function createSession(): Promise<void> {
   const store = await cookies();
   store.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    // Secure in production, unless explicitly relaxed for an HTTP-only test
+    // deploy (set SESSION_COOKIE_INSECURE=true there — testing only).
+    secure:
+      process.env.NODE_ENV === "production" &&
+      process.env.SESSION_COOKIE_INSECURE !== "true",
     sameSite: "lax",
     path: "/",
     maxAge: MAX_AGE_SECONDS,

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zodchie
+      POSTGRES_PASSWORD: zodchie
+      POSTGRES_DB: zodchie
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zodchie -d zodchie"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # Runtime secrets (DATABASE_URL, SESSION_SECRET, ADMIN_PASSWORD_HASH, …).
+    # env_file passes values literally — no $ escaping needed for the bcrypt hash.
+    env_file:
+      - .env.production
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist uploaded product images across rebuilds/restarts.
+      - uploads:/app/public/uploads
+
+volumes:
+  pgdata:
+  uploads:
