@@ -9,9 +9,19 @@ export async function GET(request: Request) {
     return Response.json({ products: [], categories: [] });
   }
 
+  const contains = { contains: q, mode: "insensitive" as const };
   const [products, categories] = await Promise.all([
     prisma.product.findMany({
-      where: { title: { contains: q, mode: "insensitive" } },
+      where: {
+        OR: [
+          { title: contains },
+          { brand: contains },
+          { article: contains },
+          { code: contains },
+          { attributes: { some: { value: contains } } },
+          { attributes: { some: { name: contains } } },
+        ],
+      },
       take: 6,
       orderBy: { title: "asc" },
       select: {

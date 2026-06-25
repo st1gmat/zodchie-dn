@@ -5,8 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
 import { SearchBar } from "@/components/SearchBar";
+import { TelegramIcon, InstagramIcon } from "@/components/icons";
 
-const navLinks = [{ href: "/catalog", label: "Каталог" }];
+const navLinks = [
+  { href: "/", label: "Главная" },
+  { href: "/catalog", label: "Каталог" },
+];
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -20,7 +24,7 @@ export function Header() {
       <div className="hidden border-b border-border/60 bg-surface/60 sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-xs text-muted">
           <span>{siteConfig.address}</span>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             <span>{siteConfig.workingHours}</span>
             <a
               href={siteConfig.phoneHref}
@@ -28,6 +32,26 @@ export function Header() {
             >
               {siteConfig.phone}
             </a>
+            <span className="flex items-center gap-2.5">
+              <a
+                href={siteConfig.social.telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Telegram"
+                className="text-muted transition-colors hover:text-accent-soft"
+              >
+                <TelegramIcon className="h-[15px] w-[15px]" />
+              </a>
+              <a
+                href={siteConfig.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-muted transition-colors hover:text-accent-soft"
+              >
+                <InstagramIcon className="h-[15px] w-[15px]" />
+              </a>
+            </span>
           </div>
         </div>
       </div>
