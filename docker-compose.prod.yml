@@ -21,7 +21,8 @@ services:
       db:
         condition: service_healthy
     # Runtime secrets (DATABASE_URL, SESSION_SECRET, ADMIN_PASSWORD_HASH, …).
-    # env_file passes values literally — no $ escaping needed for the bcrypt hash.
+    # NOTE: Compose interpolates $ in env_file values, so every $ in the bcrypt
+    # ADMIN_PASSWORD_HASH must be doubled ($$) inside .env.production.
     env_file:
       - .env.production
     ports:

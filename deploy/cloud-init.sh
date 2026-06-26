@@ -61,11 +61,14 @@ SESSION_SECRET="$(openssl rand -base64 32)"
 
 # Хеш пароля считаем во временном Node-контейнере (пароль передаём через -e PW,
 # чтобы не возиться с экранированием). На выходе — сырой bcrypt-хеш ($2b$10$…).
-ADMIN_PASSWORD_HASH="$(docker run --rm -e PW="$ADMIN_PASSWORD" node:20-alpine \
+ADMIN_PASSWORD_HASH_RAW="$(docker run --rm -e PW="$ADMIN_PASSWORD" node:20-alpine \
   sh -c 'npm i -s bcryptjs >/dev/null 2>&1 && node -e "console.log(require(\"bcryptjs\").hashSync(process.env.PW,10))"')"
 
-# Пишем файл. Переменные подставляются один раз; символы $ внутри хеша
-# попадают в файл как есть (docker compose env_file читает значения буквально).
+# docker compose ПОДСТАВЛЯЕТ переменные в env_file, поэтому каждый $ в хеше
+# нужно удвоить ($$), иначе "$2b$10$abc…" будет испорчен. Compose превратит
+# $$ обратно в $ при чтении.
+ADMIN_PASSWORD_HASH="$(printf '%s' "$ADMIN_PASSWORD_HASH_RAW" | sed 's/[$]/$$/g')"
+
 cat > "$APP_DIR/.env.production" <<EOF
 NODE_ENV=production
 DATABASE_URL=postgresql://zodchie:zodchie@db:5432/zodchie
