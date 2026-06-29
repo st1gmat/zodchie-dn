@@ -14,7 +14,7 @@ export function CatalogSidebar({ categories }: { categories: CategoryView[] }) {
               <li key={category.id} className="group/cat relative">
                 <Link
                   href={`/catalog/${category.slug}`}
-                  className="flex items-center justify-between gap-2 px-4 py-2.5 text-muted transition-colors group-hover/cat:bg-surface-soft group-hover/cat:text-accent-soft"
+                  className="flex items-center justify-between gap-2 px-4 py-2.5 text-foreground transition-colors group-hover/cat:bg-surface-soft group-hover/cat:text-accent-soft"
                 >
                   {category.title}
                   {category.children.length > 0 && (
