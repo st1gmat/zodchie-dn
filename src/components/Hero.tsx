@@ -34,7 +34,7 @@ export function Hero({ categories }: { categories: CategoryView[] }) {
           <CatalogSidebar categories={categories} />
 
           <div className="order-1 max-w-3xl md:order-2 md:pl-8">
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-accent-soft">
+            <p className="text-lg font-semibold uppercase tracking-[0.2em] text-accent-strong">
               {siteConfig.legalName} · {siteConfig.city}
             </p>
 
@@ -43,9 +43,9 @@ export function Hero({ categories }: { categories: CategoryView[] }) {
             </h1>
 
             <p className="mt-5 text-lg leading-relaxed text-muted">
-              Смесители, сантехника, отопление и всё для ремонта ванной —
-              от проверенных производителей, с консультацией по выбору
-              и расчётом нужного количества.
+              Смесители, душевые системы, ванны, инсталляции и аксессуары.
+              Индивидуальный подход к каждому клиенту. Подберём идеальное
+              решение для любого проекта — от минимализма до классики.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
