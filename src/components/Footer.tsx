@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
-import { TelegramIcon, InstagramIcon } from "@/components/icons";
+import { TelegramIcon, InstagramIcon, MaxIcon } from "@/components/icons";
 
 export function Footer() {
   const pathname = usePathname();
@@ -44,6 +44,15 @@ export function Footer() {
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent-soft hover:text-accent-soft"
               >
                 <InstagramIcon />
+              </a>
+              <a
+                href={siteConfig.social.max}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="MAX"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent-soft hover:text-accent-soft"
+              >
+                <MaxIcon />
               </a>
             </div>
           </div>

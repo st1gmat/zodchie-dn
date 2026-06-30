@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
 import { SearchBar } from "@/components/SearchBar";
-import { TelegramIcon, InstagramIcon } from "@/components/icons";
+import { TelegramIcon, InstagramIcon, MaxIcon } from "@/components/icons";
 
 const navLinks = [
   { href: "/", label: "Главная" },
@@ -51,6 +51,15 @@ export function Header() {
                 className="text-muted transition-colors hover:text-accent-soft"
               >
                 <InstagramIcon className="h-[15px] w-[15px]" />
+              </a>
+              <a
+                href={siteConfig.social.max}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="MAX"
+                className="text-muted transition-colors hover:text-accent-soft"
+              >
+                <MaxIcon className="h-[15px] w-[15px]" />
               </a>
             </span>
           </div>
