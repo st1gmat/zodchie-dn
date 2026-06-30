@@ -125,7 +125,7 @@ function readProduct(formData: FormData) {
 export async function createProduct(formData: FormData) {
   await requireAdmin();
   const data = readProduct(formData);
-  await prisma.product.create({
+  const created = await prisma.product.create({
     data: {
       slug: slugify(data.title),
       title: data.title,
@@ -138,9 +138,12 @@ export async function createProduct(formData: FormData) {
       order: data.order,
       categoryId: data.categoryId,
     },
+    select: { id: true },
   });
   refreshPublic();
-  redirect("/admin/products");
+  // Land on the product's edit page so images and characteristics (which need
+  // an existing product id) can be added right after creating it.
+  redirect(`/admin/products/${created.id}`);
 }
 
 export async function updateProduct(formData: FormData) {
