@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { TelegramIcon, InstagramIcon } from "@/components/icons";
+import { TelegramIcon, InstagramIcon, MaxIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Контакты — Зодчие",
@@ -78,6 +78,15 @@ export default function ContactsPage() {
               className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent-soft hover:text-accent-soft"
             >
               <InstagramIcon className="h-5 w-5" />
+            </a>
+            <a
+              href={siteConfig.social.max}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="MAX"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent-soft hover:text-accent-soft"
+            >
+              <MaxIcon className="h-5 w-5" />
             </a>
           </div>
         </div>

@@ -14,5 +14,6 @@ export const siteConfig = {
   social: {
     telegram: "https://t.me/zodchiedn",
     instagram: "https://instagram.com/shop_zodchie_donetsk",
+    max: "https://max.ru/join/-iMropmqD0qqsipPMuJA80USwFkvLkOPI8yyFVXKhxk",
   },
 };
