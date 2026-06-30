@@ -22,10 +22,12 @@ export function ProductForm({
   action,
   categories,
   product,
+  submitLabel = "Сохранить",
 }: {
   action: (formData: FormData) => void;
   categories: CategoryOption[];
   product?: ProductFormValues;
+  submitLabel?: string;
 }) {
   return (
     <form action={action} className="flex max-w-xl flex-col gap-5">
@@ -124,7 +126,7 @@ export function ProductForm({
           type="submit"
           className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft"
         >
-          Сохранить
+          {submitLabel}
         </button>
         <Link href="/admin/products" className="text-sm text-muted hover:text-foreground">
           Отмена
