@@ -28,8 +28,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Persist uploaded product images across rebuilds/restarts.
-      - uploads:/app/public/uploads
+      # Persist uploaded product images across rebuilds/restarts. Stored outside
+      # public/ and served by the /uploads/[file] route handler (next start does
+      # not serve files added to public/ after build).
+      - uploads:/app/var/uploads
 
 volumes:
   pgdata:

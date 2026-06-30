@@ -44,7 +44,8 @@ next-env.d.ts
 
 /src/generated/prisma
 
-# uploaded catalog images (local disk storage)
+# uploaded catalog images (local disk storage, served via /uploads route)
+/var/uploads
 /public/uploads
 
 # dev-only notes / agent instructions — kept on the `dev` branch, excluded from
