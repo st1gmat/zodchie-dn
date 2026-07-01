@@ -10,7 +10,7 @@ type ProductHit = {
   title: string;
   price: number;
   categorySlug: string;
-  imageUrl: string;
+  imageUrl: string | null;
 };
 type CategoryHit = { slug: string; title: string; parentTitle: string | null };
 type Results = { products: ProductHit[]; categories: CategoryHit[] };
@@ -161,14 +161,30 @@ export function SearchBar() {
                   style={{ animationDelay: `${index * 30}ms` }}
                   className="animate-result flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-surface-soft"
                 >
-                  <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-card">
-                    <Image
-                      src={product.imageUrl}
-                      alt=""
-                      fill
-                      sizes="40px"
-                      className="object-contain p-1"
-                    />
+                  <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-card">
+                    {product.imageUrl ? (
+                      <Image
+                        src={product.imageUrl}
+                        alt=""
+                        fill
+                        sizes="40px"
+                        className="object-contain p-1"
+                      />
+                    ) : (
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-5 w-5 text-muted"
+                        aria-hidden
+                      >
+                        <path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2l1-2h9l1 2h2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-9Z" />
+                        <circle cx="12" cy="12.5" r="3.5" />
+                      </svg>
+                    )}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                     <Highlight text={product.title} query={trimmed} />

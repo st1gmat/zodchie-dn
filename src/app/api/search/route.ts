@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/db";
-import { PRODUCT_PLACEHOLDER } from "@/lib/catalog";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -50,7 +49,7 @@ export async function GET(request: Request) {
       title: product.title,
       price: product.price,
       categorySlug: product.category.slug,
-      imageUrl: product.images[0]?.url ?? PRODUCT_PLACEHOLDER,
+      imageUrl: product.images[0]?.url ?? null,
     })),
     categories: categories.map((category) => ({
       slug: category.slug,
