@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format";
 import type { ProductCardView } from "@/lib/catalog";
+import { ImagePlaceholder } from "@/components/ImagePlaceholder";
 
 export function ProductCard({ product }: { product: ProductCardView }) {
   const [active, setActive] = useState(0);
   const images = product.images;
+  const hasImages = images.length > 0;
   const hasMany = images.length > 1;
 
   return (
@@ -20,18 +22,22 @@ export function ProductCard({ product }: { product: ProductCardView }) {
         className="relative aspect-square bg-card"
         onMouseLeave={() => setActive(0)}
       >
-        {images.map((src, index) => (
-          <Image
-            key={`${src}-${index}`}
-            src={src}
-            alt={product.title}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className={`object-contain p-6 transition-all duration-300 group-hover:scale-105 ${
-              index === active ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+        {hasImages ? (
+          images.map((src, index) => (
+            <Image
+              key={`${src}-${index}`}
+              src={src}
+              alt={product.title}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className={`object-contain p-6 transition-all duration-300 group-hover:scale-105 ${
+                index === active ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))
+        ) : (
+          <ImagePlaceholder size="sm" />
+        )}
 
         {!product.inStock && (
           <span className="absolute left-3 top-3 z-10 rounded-full bg-surface-soft px-3 py-1 text-xs font-medium text-muted">
