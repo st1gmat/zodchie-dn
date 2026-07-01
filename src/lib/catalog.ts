@@ -1,16 +1,13 @@
 import { prisma } from "@/lib/db";
 
-/** Shown for products that have no photo yet (e.g. fresh 1C nomenclature). */
-export const PRODUCT_PLACEHOLDER = "/images/product-placeholder.png";
-
 export type ProductCardView = {
   id: string;
   slug: string;
   title: string;
   price: number;
   inStock: boolean;
-  // Ordered image URLs (at least one — a placeholder when the product has no
-  // photos). The card lets users flip through them on hover.
+  // Ordered image URLs. May be empty — products with no photos yet (e.g. fresh
+  // 1C nomenclature) render an "image coming soon" placeholder instead.
   images: string[];
   // The product's own category slug, so links resolve even when a parent
   // category page aggregates products that live in its subcategories.
@@ -18,7 +15,7 @@ export type ProductCardView = {
 };
 
 function toCardImages(images: { url: string }[]): string[] {
-  return images.length > 0 ? images.map((image) => image.url) : [PRODUCT_PLACEHOLDER];
+  return images.map((image) => image.url);
 }
 
 /** A random selection of products for the homepage showcase. */
@@ -54,6 +51,17 @@ export async function getShowcaseProducts(
   }));
 }
 
+/** How many products per catalog page. */
+export const PRODUCTS_PER_PAGE = 24;
+
+export type BrandFacet = { name: string; count: number };
+
+export type CatalogFilters = {
+  page?: number;
+  brand?: string;
+  inStockOnly?: boolean;
+};
+
 export type CategoryDetail = {
   id: string;
   slug: string;
@@ -62,14 +70,21 @@ export type CategoryDetail = {
   parent: { slug: string; title: string } | null;
   children: { id: string; slug: string; title: string }[];
   products: ProductCardView[];
+  // Facets + pagination for the listing page.
+  brands: BrandFacet[];
+  total: number;
+  page: number;
+  pageCount: number;
 };
 
 /**
- * A category for the listing page. Products include the category's own plus
- * those of its subcategories, so a parent page aggregates everything beneath it.
+ * A category for the listing page, with pagination and brand/in-stock filters.
+ * Products include the category's own plus those of its subcategories, so a
+ * parent page aggregates everything beneath it.
  */
 export async function getCategoryDetail(
   slug: string,
+  filters: CatalogFilters = {},
 ): Promise<CategoryDetail | null> {
   const category = await prisma.category.findUnique({
     where: { slug },
@@ -89,9 +104,36 @@ export async function getCategoryDetail(
   if (!category) return null;
 
   const categoryIds = [category.id, ...category.children.map((child) => child.id)];
+
+  // Brand facet reflects the in-stock filter but NOT the brand filter, so the
+  // user can still switch to another brand within the same category.
+  const facetWhere = {
+    categoryId: { in: categoryIds },
+    ...(filters.inStockOnly ? { inStock: true } : {}),
+  };
+  const listWhere = {
+    ...facetWhere,
+    ...(filters.brand ? { brand: filters.brand } : {}),
+  };
+
+  const [total, brandGroups] = await Promise.all([
+    prisma.product.count({ where: listWhere }),
+    prisma.product.groupBy({
+      by: ["brand"],
+      where: facetWhere,
+      _count: { brand: true },
+      orderBy: { _count: { brand: "desc" } },
+    }),
+  ]);
+
+  const pageCount = Math.max(1, Math.ceil(total / PRODUCTS_PER_PAGE));
+  const page = Math.min(Math.max(1, filters.page ?? 1), pageCount);
+
   const products = await prisma.product.findMany({
-    where: { categoryId: { in: categoryIds } },
+    where: listWhere,
     orderBy: [{ category: { order: "asc" } }, { order: "asc" }],
+    skip: (page - 1) * PRODUCTS_PER_PAGE,
+    take: PRODUCTS_PER_PAGE,
     select: {
       id: true,
       slug: true,
@@ -103,6 +145,10 @@ export async function getCategoryDetail(
     },
   });
 
+  const brands: BrandFacet[] = brandGroups
+    .filter((group) => group.brand)
+    .map((group) => ({ name: group.brand as string, count: group._count.brand }));
+
   return {
     id: category.id,
     slug: category.slug,
@@ -110,6 +156,10 @@ export async function getCategoryDetail(
     description: category.description,
     parent: category.parent,
     children: category.children,
+    brands,
+    total,
+    page,
+    pageCount,
     products: products.map((product) => ({
       id: product.id,
       slug: product.slug,
@@ -179,7 +229,7 @@ export async function getProductDetail(
     code: product.code,
     brand: product.brand,
     article: product.article,
-    images: images.length > 0 ? images : [PRODUCT_PLACEHOLDER],
+    images,
     attributes: product.attributes,
     category: product.category,
   };
