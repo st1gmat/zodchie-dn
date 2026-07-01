@@ -8,15 +8,34 @@ const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 function getSecret(): Uint8Array {
   const secret = process.env.SESSION_SECRET;
-  if (!secret) throw new Error("SESSION_SECRET is not set");
-  return new TextEncoder().encode(secret);
+  if (secret) return new TextEncoder().encode(secret);
+
+  // Dev convenience: fall back to a fixed key so login works with no env setup.
+  // Production still requires a real secret and fails loudly without one.
+  if (process.env.NODE_ENV !== "production") {
+    return new TextEncoder().encode("dev-insecure-session-secret");
+  }
+
+  throw new Error("SESSION_SECRET is not set");
 }
+
+/** Default dev password when no hash is configured (non-production only). */
+export const DEV_ADMIN_PASSWORD = "admin";
 
 /** Single-admin login: compare against the bcrypt hash in ADMIN_PASSWORD_HASH. */
 export async function verifyPassword(password: string): Promise<boolean> {
   const hash = process.env.ADMIN_PASSWORD_HASH;
-  if (!hash) return false;
-  return bcrypt.compare(password, hash);
+  if (hash) return bcrypt.compare(password, hash);
+
+  // Dev convenience: with no hash configured, skip bcrypt entirely and accept a
+  // plaintext password (ADMIN_PASSWORD, or "admin" by default) so you don't have
+  // to generate a hash locally. Never active in production — a hash is required
+  // there, so a missing hash still fails closed.
+  if (process.env.NODE_ENV !== "production") {
+    return password === (process.env.ADMIN_PASSWORD ?? DEV_ADMIN_PASSWORD);
+  }
+
+  return false;
 }
 
 /** Issue a signed session cookie. Call only from a Server Action / Route Handler. */
