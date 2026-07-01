@@ -15,6 +15,7 @@ type SeedCategory = {
   title: string;
   description: string | null;
   icon: string | null;
+  parent: string | null;
   order: number;
 };
 type SeedProduct = {
@@ -54,7 +55,8 @@ async function main() {
   await prisma.categoryAttribute.deleteMany();
   await prisma.category.deleteMany();
 
-  // Categories (flat, type-based taxonomy derived from the export).
+  // Categories: two-level, type-based taxonomy. Heads precede their children in
+  // the array, so a child's parent id is already in the map when we reach it.
   const categoryIdBySlug = new Map<string, string>();
   for (const category of catalog.categories) {
     const created = await prisma.category.create({
@@ -64,6 +66,9 @@ async function main() {
         description: category.description ?? undefined,
         icon: category.icon ?? undefined,
         order: category.order,
+        parentId: category.parent
+          ? categoryIdBySlug.get(category.parent)
+          : undefined,
       },
       select: { id: true, slug: true },
     });

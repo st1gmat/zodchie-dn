@@ -27,26 +27,42 @@ XLS = os.path.join(ROOT, "memory", "товары.xls")
 OUT = os.path.join(HERE, "catalog.json")
 
 # --- Customer-facing taxonomy (by product TYPE, not brand). ------------------
-# slug -> metadata. `icon` matches a CategoryIcon in src/components/CategoryIcon.
+# Two levels: a handful of head categories keep the sidebar short, each opening
+# a flyout with its leaf categories. Products are always classified into LEAF
+# slugs; heads hold no products directly (the listing aggregates children).
+# Tuple: (slug, title, description, icon, parent_slug | None). Listed in display
+# order; a head is followed by its leaves so `order = index` sorts both the
+# top-level list and each flyout correctly. `icon` matches CategoryIcon.
 CATEGORIES = [
-    ("smesiteli", "Смесители", "Для кухни, ванной, раковины и душа", "faucets"),
-    ("plitka", "Плитка и керамогранит", "Настенная, напольная, мозаика и декор", "tile"),
-    ("unitazy", "Унитазы и инсталляции", "Компакты, подвесные, биде и инсталляции", "toilets"),
-    ("rakoviny", "Раковины и умывальники", "Накладные, встраиваемые, тюльпаны", "sinks"),
-    ("vanny", "Ванны", "Акриловые, стальные, чугунные", "baths"),
-    ("dushevye", "Душевые кабины и ограждения", "Кабины, уголки, двери, поддоны", "shower"),
-    ("mebel", "Мебель для ванной", "Тумбы, зеркала, пеналы, шкафы", "furniture"),
-    ("polotencesushiteli", "Полотенцесушители", "Водяные и электрические", "towel"),
-    ("vodonagrevateli", "Водонагреватели и отопление", "Бойлеры, радиаторы, обогрев", "heating"),
-    ("moyki", "Кухонные мойки", "Нержавейка, гранит, керамика", "kitchen"),
-    ("sifony", "Сифоны, трапы и арматура", "Сливы, трапы, желоба, механизмы", "drain"),
-    ("aksessuary", "Аксессуары для ванной", "Держатели, полки, дозаторы, крючки", "accessory"),
-    ("komplektuyushchie", "Шланги, подводки, комплектующие", "Подводки, гофры, картриджи", "pipes"),
-    ("osveshchenie", "Освещение и электрика", "Лампы, светильники, фурнитура", "lighting"),
-    ("materialy", "Отделочные материалы", "Двери, панели, ламинат, герметики", "materials"),
-    ("prochee", "Прочее", "Разные товары и комплектующие", None),
+    # Head: сантехника (fixtures)
+    ("santehnika", "Сантехника", "Смесители, унитазы, раковины, ванны, душ", "faucets", None),
+    ("smesiteli", "Смесители", "Для кухни, ванной, раковины и душа", "faucets", "santehnika"),
+    ("unitazy", "Унитазы и инсталляции", "Компакты, подвесные, биде и инсталляции", "toilets", "santehnika"),
+    ("rakoviny", "Раковины и умывальники", "Накладные, встраиваемые, тюльпаны", "sinks", "santehnika"),
+    ("vanny", "Ванны", "Акриловые, стальные, чугунные", "baths", "santehnika"),
+    ("dushevye", "Душевые кабины и ограждения", "Кабины, уголки, двери, поддоны", "shower", "santehnika"),
+    ("polotencesushiteli", "Полотенцесушители", "Водяные и электрические", "towel", "santehnika"),
+    ("moyki", "Кухонные мойки", "Нержавейка, гранит, керамика", "kitchen", "santehnika"),
+    # Head: плитка (standalone, no leaves)
+    ("plitka", "Плитка и керамогранит", "Настенная, напольная, мозаика и декор", "tile", None),
+    # Head: мебель и аксессуары
+    ("mebel-aksessuary", "Мебель и аксессуары", "Тумбы, зеркала, полки, держатели", "furniture", None),
+    ("mebel", "Мебель для ванной", "Тумбы, зеркала, пеналы, шкафы", "furniture", "mebel-aksessuary"),
+    ("aksessuary", "Аксессуары для ванной", "Держатели, полки, дозаторы, крючки", "accessory", "mebel-aksessuary"),
+    # Head: инженерное оборудование
+    ("inzheneriya", "Инженерное оборудование", "Отопление, водоснабжение, комплектующие", "pipes", None),
+    ("vodonagrevateli", "Водонагреватели и отопление", "Бойлеры, радиаторы, обогрев", "heating", "inzheneriya"),
+    ("sifony", "Сифоны, трапы и арматура", "Сливы, трапы, желоба, механизмы", "drain", "inzheneriya"),
+    ("komplektuyushchie", "Шланги, подводки, комплектующие", "Подводки, гофры, картриджи", "pipes", "inzheneriya"),
+    # Head: остальное (standalone leaves)
+    ("osveshchenie", "Освещение и электрика", "Лампы, светильники, фурнитура", "lighting", None),
+    ("materialy", "Отделочные материалы", "Двери, панели, ламинат, герметики", "materials", None),
+    ("prochee", "Прочее", "Разные товары и комплектующие", None, None),
 ]
-CATEGORY_ORDER = [slug for slug, *_ in CATEGORIES]
+# Leaf slugs that actually receive products (heads are excluded from the report).
+CATEGORY_ORDER = [c[0] for c in CATEGORIES if c[4] is not None or c[0] in (
+    "plitka", "osveshchenie", "materialy", "prochee",
+)]
 
 # --- Keyword groups (checked against the lowercased «Вид номенклатуры»/name). -
 # Order matters: earlier groups win. Combined kinds like "шланги, подводки,
@@ -224,8 +240,9 @@ def main():
 
     data = {
         "categories": [
-            {"slug": s, "title": t, "description": d, "icon": i, "order": idx}
-            for idx, (s, t, d, i) in enumerate(CATEGORIES)
+            {"slug": s, "title": t, "description": d, "icon": i,
+             "parent": p, "order": idx}
+            for idx, (s, t, d, i, p) in enumerate(CATEGORIES)
         ],
         "products": products,
     }
