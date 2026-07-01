@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { isAuthenticated } from "@/lib/auth";
+import { isAuthenticated, DEV_ADMIN_PASSWORD } from "@/lib/auth";
 import { login } from "@/app/admin/actions";
 
 export const metadata: Metadata = {
@@ -14,6 +14,13 @@ export default async function LoginPage({
   if (await isAuthenticated()) redirect("/admin");
 
   const { error } = await searchParams;
+
+  // In dev with no hash configured, verifyPassword accepts a plaintext password —
+  // surface it here so you don't have to remember it.
+  const devPassword =
+    process.env.NODE_ENV !== "production" && !process.env.ADMIN_PASSWORD_HASH
+      ? process.env.ADMIN_PASSWORD ?? DEV_ADMIN_PASSWORD
+      : null;
 
   return (
     <div className="mx-auto flex min-h-[80vh] max-w-sm flex-col justify-center px-6">
@@ -36,6 +43,12 @@ export default async function LoginPage({
 
         {error && (
           <p className="text-sm text-red-600">Неверный пароль, попробуйте снова.</p>
+        )}
+
+        {devPassword && (
+          <p className="rounded-lg border border-dashed border-border bg-surface px-3 py-2 text-xs text-muted">
+            Dev-режим: пароль <code className="font-mono text-foreground">{devPassword}</code>
+          </p>
         )}
 
         <button
